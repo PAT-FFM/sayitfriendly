@@ -11,10 +11,16 @@
   <main>
     <header>
       <h1>Say it friendly</h1>
-      <p class="tagline">Sag, was du denkst. Wir machen Corporate-Sprech draus.</p>
+      <p class="tagline">Sag, was du denkst, und wir machen Corporate-Sprech draus. Oder umgekehrt: LinkedIn rein, Klartext raus.</p>
     </header>
 
     <form id="form">
+      <fieldset class="mode">
+        <legend>Modus</legend>
+        <label><input type="radio" name="mode" value="friendly" checked> 😊 Freundlich</label>
+        <label><input type="radio" name="mode" value="plain"> 🔍 Klartext</label>
+      </fieldset>
+
       <label for="input">Dein Text</label>
       <textarea id="input" rows="5" placeholder="z. B.: Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt."></textarea>
       <div class="actions">
@@ -29,7 +35,7 @@
         <p id="original"></p>
       </article>
       <article class="friendly">
-        <h2>Freundlich</h2>
+        <h2 id="result-heading">Freundlich</h2>
         <p id="friendly"></p>
       </article>
     </section>

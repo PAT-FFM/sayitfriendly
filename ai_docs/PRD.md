@@ -43,7 +43,7 @@ Browser: Original | Umformulierung
 |                  |                                                                                                           |
 | ---------------- | --------------------------------------------------------------------------------------------------------- |
 | Methode / Pfad   | `POST /api/friendly`                                                                                      |
-| Request-Body     | `{ "text": "<Originaltext>" }`                                                                            |
+| Request-Body     | `{ "text": "<Originaltext>", "mode": "friendly" \| "plain" }`. `mode` ist optional (Bonus B3), fehlt es oder ist es unbekannt, gilt `"friendly"`. |
 | Antwort (Erfolg) | `200` mit `{ "friendly": "<umformulierter Text>" }`                                                       |
 | Antwort (Fehler) | `400`, wenn `text` fehlt oder leer ist, sonst `500`. Jeweils mit `{ "error": "<verständliche Meldung>" }` |
 
@@ -105,7 +105,7 @@ Regeln:
 - Verwende mindestens 3 Emojis pro Antwort, davon mindestens einmal die Rakete 🚀.
 ```
 
-Der Prompt steht als Konstante `SYSTEM_PROMPT` in `src/index.js`. Für Bonus B2 (Ton-Auswahl) wird daraus später ein Prompt je Ton.
+Der Prompt steht als Konstante `FRIENDLY_PROMPT` in `src/index.js`. Mit Bonus B3 hat jeder Modus einen eigenen Prompt im Objekt `MODES`. Für Bonus B2 (Ton-Auswahl) kommen dort später weitere Einträge dazu.
 
 ## 4. Funktionale Anforderungen
 
@@ -132,6 +132,7 @@ Jede Bonus-Aufgabe hat eine eigene Feature-Spec. Dort stehen Details, Entscheidu
 | --- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------ |
 | B1  | Kopieren-Button: Die Umformulierung wird per Klick in die Zwischenablage kopiert, mit kurzer Bestätigung („Kopiert!“).                  | [B1](features/B1_kopieren-button.md) | Offen  |
 | B2  | Ton-Auswahl: Dropdown mit Corporate (Standard), zuckersüß und passiv-aggressiv. Der Ton wird als Feld `tone` an den Endpoint übergeben. | [B2](features/B2_ton-auswahl.md)     | Offen  |
+| B3  | Klartext-Modus: Umschalter 😊 Freundlich / 🔍 Klartext. Im Klartext-Modus wird ein LinkedIn-Post in trockenen Klartext zurückübersetzt.   | [B3](features/B3_klartext-modus.md)  | Umgesetzt |
 
 
 

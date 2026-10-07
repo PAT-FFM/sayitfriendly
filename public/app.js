@@ -5,11 +5,44 @@ const status = document.getElementById("status");
 const result = document.getElementById("result");
 const original = document.getElementById("original");
 const friendly = document.getElementById("friendly");
+const resultHeading = document.getElementById("result-heading");
+
+const MODES = {
+  friendly: {
+    placeholder: "z. B.: Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt.",
+    button: "Freundlich machen",
+    loading: "Wird schöngefärbt …",
+    heading: "Freundlich",
+  },
+  plain: {
+    placeholder: "z. B.: I'm thrilled and humbled to announce that after 7 amazing years I'm starting a new chapter. 🚀 #grateful",
+    button: "Klartext bitte",
+    loading: "Wird entschwurbelt …",
+    heading: "Klartext",
+  },
+};
+
+function currentMode() {
+  return form.elements.mode.value;
+}
+
+function applyMode() {
+  const labels = MODES[currentMode()];
+  input.placeholder = labels.placeholder;
+  button.textContent = labels.button;
+  resultHeading.textContent = labels.heading;
+  result.hidden = true;
+  setStatus("");
+}
 
 function setStatus(message, isError = false) {
   status.textContent = message;
   status.classList.toggle("error", isError);
 }
+
+form.addEventListener("change", (event) => {
+  if (event.target.name === "mode") applyMode();
+});
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -21,14 +54,15 @@ form.addEventListener("submit", async (event) => {
     return;
   }
 
+  const mode = currentMode();
   button.disabled = true;
-  setStatus("Wird schöngefärbt …");
+  setStatus(MODES[mode].loading);
 
   try {
     const response = await fetch("/api/friendly", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
+      body: JSON.stringify({ text, mode }),
     });
 
     const data = await response.json().catch(() => ({}));
@@ -49,3 +83,5 @@ form.addEventListener("submit", async (event) => {
     button.disabled = false;
   }
 });
+
+applyMode();
