@@ -20,6 +20,12 @@ const MODES = {
     loading: "Wird entschwurbelt …",
     heading: "Klartext",
   },
+  immo: {
+    placeholder: "z. B.: Lichtdurchflutete Wohnung mit Charme in aufstrebender Lage, verkehrsgünstig gelegen. Ideal für Kreative mit Liebe zum Detail.",
+    button: "Klartext bitte",
+    loading: "Wird entmaklert …",
+    heading: "Klartext",
+  },
 };
 
 function currentMode() {

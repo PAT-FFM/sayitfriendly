@@ -39,9 +39,32 @@ Plain: I quit. The new job pays better.
 Post: "Ich bin so dankbar für diese unglaubliche Reise! 🙏 Zeit für neue Herausforderungen. #opentowork"
 Plain: Mir wurde gekündigt. Ich suche einen Job.`;
 
-// Grobe Spracherkennung Deutsch/Englisch. Im Klartext-Modus hält sich das Modell
-// sonst nicht zuverlässig an die Sprache des Posts.
-const GERMAN_WORDS = new Set(["der", "die", "das", "und", "ich", "nicht", "ist", "mit", "für", "auf", "ein", "eine", "zu", "wir", "mein", "meine", "bin", "heute", "danke"]);
+const IMMO_PROMPT = `You are a brutally honest translator of real-estate listings and hotel or holiday offers.
+Translate the ad into dry plain language: what is this place really like?
+
+Rules:
+- MANDATORY: Always reply in the language of the ad. An English ad gets an English reply,
+  a German ad gets a German reply. This rule overrides all others.
+- Decode the typical euphemisms, e.g. "verkehrsgünstig" = right next to a busy road,
+  "aufstrebende Lage" = nothing there yet, "Liebhaberobjekt" = needs major renovation,
+  "gemütlich" / "cozy" = small, "zweckmäßig eingerichtet" = bare minimum,
+  "lebhafte Umgebung" / "vibrant area" = loud at night, "Meerblick" without details = maybe from the balcony corner.
+- MANDATORY: Every hard fact from the ad (price, size, number of rooms, distances) must appear
+  in your reply, unchanged. A German "Zimmer" is a room, not a bedroom. Do not invent new facts.
+- Write 1 to 4 short, complete sentences. No bullet points.
+- Deadpan rather than mean.
+- Output only the plain text. No intro, no explanation, no quotation marks, no heading.
+
+Examples:
+Ad: "Charmantes Liebhaberobjekt in aufstrebender Lage, verkehrsgünstig gelegen, mit viel Potenzial für handwerklich Begabte."
+Plain: Ein Haus, das dringend renoviert werden muss, an einer lauten Straße in einer Gegend, in der noch nichts los ist. Das meiste musst du selbst reparieren.
+
+Ad: "Cozy rooms just a short stroll from the beach, in a vibrant area with lively nightlife."
+Plain: The rooms are tiny. The beach is a bit of a walk, and it's loud until late at night.`;
+
+// Grobe Spracherkennung Deutsch/Englisch. In den Klartext-Modi hält sich das Modell
+// sonst nicht zuverlässig an die Sprache des Originals.
+const GERMAN_WORDS = new Set(["der", "die", "das", "und", "ich", "nicht", "ist", "mit", "für", "auf", "ein", "eine", "zu", "wir", "mein", "meine", "bin", "heute", "danke", "im", "von", "vom", "zum", "zur", "nur", "sehr", "oder", "auch"]);
 const ENGLISH_WORDS = new Set(["the", "and", "i", "is", "to", "of", "my", "for", "with", "a", "an", "we", "our", "am", "today", "thanks"]);
 
 function detectLanguage(text) {
@@ -55,18 +78,22 @@ function detectLanguage(text) {
   return german > english ? "German" : "English";
 }
 
-// Modus aus dem Request-Feld "mode", unbekannt oder fehlend → "friendly".
-const MODES = {
-  friendly: { system: FRIENDLY_PROMPT, user: (text) => text },
-  plain: {
-    system: PLAIN_PROMPT,
-    user: (text) => {
-      const lang = detectLanguage(text);
-      return `Post (${lang}): "${text}"\nPlain (${lang}):`;
-    },
-  },
-};
+// Nutzer-Nachricht im Format der Beispiele im Prompt. Die Aufforderung am Ende steht
+// in der Zielsprache selbst, eine englische Anweisung zog deutsche Antworten ins Englische.
+function withLanguage(label) {
+  return (text) =>
+    detectLanguage(text) === "German"
+      ? `${label} (German): "${text}"\nKlartext, nur auf Deutsch:`
+      : `${label} (English): "${text}"\nPlain, in English only:`;
+}
 
+// Modus aus dem Request-Feld "mode", unbekannt oder fehlend → "friendly".
+// Die Klartext-Modi laufen kühler: Bei 0.8 wechselte das Modell öfter die Sprache.
+const MODES = {
+  friendly: { system: FRIENDLY_PROMPT, user: (text) => text, temperature: 0.8 },
+  plain: { system: PLAIN_PROMPT, user: withLanguage("Post"), temperature: 0.4 },
+  immo: { system: IMMO_PROMPT, user: withLanguage("Ad"), temperature: 0.4 },
+};
 
 export default {
   async fetch(request, env) {
@@ -102,7 +129,7 @@ async function handleFriendly(request, env) {
         { role: "system", content: prompt.system },
         { role: "user", content: prompt.user(text) },
       ],
-      temperature: 0.8,
+      temperature: prompt.temperature,
       max_tokens: 1024,
     });
 

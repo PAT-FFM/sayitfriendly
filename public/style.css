@@ -11,6 +11,9 @@
 
 * { box-sizing: border-box; }
 
+/* Sonst überschreibt z. B. .columns { display: grid } das hidden-Attribut */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -92,9 +95,7 @@ button:disabled { opacity: 0.6; cursor: wait; }
 
 .columns p { margin: 0; white-space: pre-wrap; }
 
-@media (max-width: 640px) {
-  .columns { grid-template-columns: 1fr; }
-}
+
 
 .mode {
   position: relative;
@@ -136,4 +137,9 @@ button:disabled { opacity: 0.6; cursor: wait; }
 .mode label:has(input:focus-visible) {
   outline: 2px solid var(--accent);
   outline-offset: -4px;
+}
+
+@media (max-width: 640px) {
+  .columns { grid-template-columns: 1fr; }
+  .mode { display: flex; flex-direction: column; width: 100%; }
 }

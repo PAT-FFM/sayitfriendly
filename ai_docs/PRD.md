@@ -43,7 +43,7 @@ Browser: Original | Umformulierung
 |                  |                                                                                                           |
 | ---------------- | --------------------------------------------------------------------------------------------------------- |
 | Methode / Pfad   | `POST /api/friendly`                                                                                      |
-| Request-Body     | `{ "text": "<Originaltext>", "mode": "friendly" \| "plain" }`. `mode` ist optional (Bonus B3), fehlt es oder ist es unbekannt, gilt `"friendly"`. |
+| Request-Body     | `{ "text": "<Originaltext>", "mode": "friendly" \| "plain" \| "immo" }`. `mode` ist optional (Bonus B3/B4), fehlt es oder ist es unbekannt, gilt `"friendly"`. |
 | Antwort (Erfolg) | `200` mit `{ "friendly": "<umformulierter Text>" }`                                                       |
 | Antwort (Fehler) | `400`, wenn `text` fehlt oder leer ist, sonst `500`. Jeweils mit `{ "error": "<verständliche Meldung>" }` |
 
@@ -74,11 +74,11 @@ Browser: Original | Umformulierung
 | Einstellung   | Wert                                           | Begründung                                                                                                       |
 | ------------- | ---------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
 | Modell        | `@cf/mistralai/mistral-small-3.1-24b-instruct` | Europäisches Modell mit starkem Deutsch, 128k Kontext, günstig.                                                  |
-| `temperature` | `0.8`                                          | Der Standardwert 0.15 liefert zu brave, gleichförmige Texte. Für Satire braucht es mehr Kreativität.             |
+| `temperature` | `0.8` (Freundlich), `0.4` (Klartext-Modi)      | Der Standardwert 0.15 liefert zu brave, gleichförmige Texte. Für Satire braucht es mehr Kreativität. Die Klartext-Modi brauchen das nicht, und bei 0.8 wechselten sie öfter die Sprache. |
 | `max_tokens`  | `1024`                                         | Der Standardwert 256 schneidet längere Umformulierungen ab. Corporate-Sprech wird meist länger als das Original. |
 
 
-- Der Aufruf erfolgt mit `env.AI.run(model, { messages, temperature, max_tokens })`. Dabei enthält `messages` den System-Prompt (`role: "system"`) und den Originaltext als `role: "user"`. Im Klartext-Modus (B3) wird der Text zusätzlich mit der erkannten Sprache versehen.
+- Der Aufruf erfolgt mit `env.AI.run(model, { messages, temperature, max_tokens })`. Dabei enthält `messages` den System-Prompt (`role: "system"`) und den Originaltext als `role: "user"`. In den Klartext-Modi (B3, B4) wird der Text zusätzlich mit der erkannten Sprache versehen, und die Aufforderung am Ende steht in der Zielsprache („Klartext, nur auf Deutsch:“).
 - Der Text der Antwort steht im Feld `response`. Der Worker entfernt Leerzeichen am Anfang und Ende (`trim`) und gibt ihn als `friendly` zurück.
 
 #### Modellvergleich (2026-10-07)
@@ -146,7 +146,8 @@ Jede Bonus-Aufgabe hat eine eigene Feature-Spec. Dort stehen Details, Entscheidu
 | --- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------ |
 | B1  | Kopieren-Button: Die Umformulierung wird per Klick in die Zwischenablage kopiert, mit kurzer Bestätigung („Kopiert!“).                  | – | Verworfen |
 | B2  | Ton-Auswahl: Dropdown mit Corporate (Standard), zuckersüß und passiv-aggressiv. Der Ton wird als Feld `tone` an den Endpoint übergeben. | – | Verworfen |
-| B3  | Klartext-Modus: Umschalter 😊 Freundlich / 🔍 Klartext. Im Klartext-Modus wird ein LinkedIn-Post in trockenen Klartext zurückübersetzt.   | [B3](features/B3_klartext-modus.md)  | Umgesetzt |
+| B3  | LinkedIn-Klartext: Ein LinkedIn-Post wird in trockenen Klartext zurückübersetzt.   | [B3](features/B3_klartext-modus.md)  | Umgesetzt |
+| B4  | Immo-Klartext: Ein Immobilien-Exposé oder Hotel- bzw. Urlaubsangebot wird in trockenen Klartext zurückübersetzt. Die Fakten bleiben erhalten. | [B4](features/B4_immo-klartext.md)  | Umgesetzt |
 
 
 
@@ -205,5 +206,5 @@ Es ist nichts mehr offen. Bekannte Schwächen, die bewusst in Kauf genommen werd
 - **Spracherkennung:** Sie kennt nur Deutsch und Englisch. Andere Sprachen werden als Englisch behandelt.
 - **`compatibility_date`:** Es steht auf `2026-06-01`, weil Wrangler 4.95 kein neueres Datum kennt. Nach einem Wrangler-Update kann es angehoben werden.
 
-Verworfene Ideen: B1, B2, Pressemitteilungen der Regierung (zu heikel) und das automatische Abrufen von LinkedIn-Posts per API, Scraping oder Bookmarklet (zu viel Aufwand für zu wenig Nutzen).
+Verworfene Ideen: B1, B2, Pressemitteilungen der Regierung (zu heikel) und das automatische Abrufen von LinkedIn-Posts, Exposés oder Hotelangeboten per API, Scraping oder Bookmarklet (zu viel Aufwand für zu wenig Nutzen; Texte werden von Hand eingefügt).
 
