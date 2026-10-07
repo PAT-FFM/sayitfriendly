@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="de">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Say it friendly</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>😊</text></svg>">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Say it friendly</h1>
+      <p class="tagline">Sag, was du denkst. Wir machen Corporate-Sprech draus.</p>
+    </header>
+
+    <form id="form">
+      <label for="input">Dein Text</label>
+      <textarea id="input" rows="5" placeholder="z. B.: Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt."></textarea>
+      <div class="actions">
+        <button id="submit" type="submit">Freundlich machen</button>
+        <span id="status" role="status" aria-live="polite"></span>
+      </div>
+    </form>
+
+    <section id="result" class="columns" hidden>
+      <article>
+        <h2>Original</h2>
+        <p id="original"></p>
+      </article>
+      <article class="friendly">
+        <h2>Freundlich</h2>
+        <p id="friendly"></p>
+      </article>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>

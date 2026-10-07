@@ -1,0 +1,18 @@
+{
+  "$schema": "./node_modules/wrangler/config-schema.json",
+  "name": "sayitfriendly",
+  "main": "src/index.js",
+  "compatibility_date": "2026-06-01",
+
+  // Frontend aus public/ ausliefern, /api/* geht immer an den Worker
+  "assets": {
+    "directory": "./public",
+    "binding": "ASSETS",
+    "run_worker_first": ["/api/*"]
+  },
+
+  // Workers AI läuft immer remote, auch bei wrangler dev
+  "ai": { "binding": "AI" },
+
+  "observability": { "enabled": true }
+}
