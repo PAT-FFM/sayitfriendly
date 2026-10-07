@@ -26,7 +26,7 @@ Die App wird in die Gegenrichtung umgedreht: Statt einen ehrlichen Text schönzu
 ## Entscheidungen
 
 - **Gleicher Endpoint und gleiches Antwortfeld.** Auch im Klartext-Modus steht das Ergebnis in `friendly`. So bleibt der API-Vertrag stabil, auch wenn der Name hier nicht ganz passt.
-- **Ein Prompt pro Modus** im Objekt `MODES` in `src/index.js`. Die Ton-Auswahl aus B2 kann denselben Mechanismus nutzen.
+- **Ein Prompt pro Modus** im Objekt `MODES` in `src/index.js`. Weitere Modi wären je ein zusätzlicher Eintrag.
 - **Klartext-Prompt auf Englisch mit zwei Beispielen.** Ohne Beispiele lieferte das Modell nur Schlagworte („Jobwechsel.“).
 - **Die Sprache erkennt der Worker selbst.** Das Modell hielt sich allein über den Prompt nicht an die Sprache des Posts. Mit deutschem Prompt kamen englische Posts auf Deutsch zurück, mit englischem Prompt deutsche Posts auf Englisch. Jetzt ermittelt `detectLanguage()` die Sprache grob über Umlaute und häufige Wörter. Die Nutzer-Nachricht hat dann die Form `Post (German): "…"\nPlain (German):`. Damit war die Sprache in 8 von 8 Tests richtig. Andere Sprachen als Deutsch und Englisch werden als Englisch behandelt.
 

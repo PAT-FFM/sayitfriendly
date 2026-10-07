@@ -78,8 +78,22 @@ Browser: Original | Umformulierung
 | `max_tokens`  | `1024`                                         | Der Standardwert 256 schneidet längere Umformulierungen ab. Corporate-Sprech wird meist länger als das Original. |
 
 
-- Der Aufruf erfolgt mit `env.AI.run(model, { messages, temperature, max_tokens })`. Dabei enthält `messages` den System-Prompt (`role: "system"`) und den Originaltext unverändert als `role: "user"`.
+- Der Aufruf erfolgt mit `env.AI.run(model, { messages, temperature, max_tokens })`. Dabei enthält `messages` den System-Prompt (`role: "system"`) und den Originaltext als `role: "user"`. Im Klartext-Modus (B3) wird der Text zusätzlich mit der erkannten Sprache versehen.
 - Der Text der Antwort steht im Feld `response`. Der Worker entfernt Leerzeichen am Anfang und Ende (`trim`) und gibt ihn als `friendly` zurück.
+
+#### Modellvergleich (2026-10-07)
+
+Mistral wurde gegen zwei andere Workers-AI-Modelle getestet: 4 Fälle × 3 Wiederholungen, ohne die Spracherkennung im Worker.
+
+| | Mistral Small 3.1 | Llama 3.3 70B (`@cf/meta/llama-3.3-70b-instruct-fp8-fast`) | Gemma 4 26B (`@cf/google/gemma-4-26b-a4b-it`) |
+|---|---|---|---|
+| Freundlich DE → DE | 3/3 | 3/3 | leere Antwort |
+| Freundlich EN → EN | 3/3 (vereinzelt „proaktiv“) | **0/3**, antwortet auf Deutsch | leere Antwort |
+| Klartext EN → EN | 3/3 | 3/3 | 3/3 |
+| Klartext DE → DE | 1/3 | 3/3 | 3/3 |
+| Antwortzeit | 1–7 s | 1–8 s | 9–24 s |
+
+**Entscheidung: Mistral bleibt.** Es ist am schnellsten und im Freundlich-Modus am zuverlässigsten. Seine Schwäche bei der Sprache im Klartext-Modus behebt die Spracherkennung im Worker. Llama scheitert an englischen Texten im Freundlich-Modus und wird im Klartext-Modus geschwätzig. Gemma liefert guten Klartext, ist aber zu langsam und gab im Freundlich-Modus nur leere Antworten. Vermutlich verbraucht es die Tokens für internes „Nachdenken“, das ist aber nicht geprüft.
 
 
 
@@ -105,7 +119,7 @@ Regeln:
 - Verwende mindestens 3 Emojis pro Antwort, davon mindestens einmal die Rakete 🚀.
 ```
 
-Der Prompt steht als Konstante `FRIENDLY_PROMPT` in `src/index.js`. Mit Bonus B3 hat jeder Modus einen eigenen Prompt im Objekt `MODES`. Für Bonus B2 (Ton-Auswahl) kommen dort später weitere Einträge dazu.
+Der Prompt steht als Konstante `FRIENDLY_PROMPT` in `src/index.js`. Mit Bonus B3 hat jeder Modus einen eigenen Prompt im Objekt `MODES`.
 
 ## 4. Funktionale Anforderungen
 
@@ -125,13 +139,13 @@ Der Prompt steht als Konstante `FRIENDLY_PROMPT` in `src/index.js`. Mit Bonus B3
 
 ### Bonus (optional, falls früher fertig)
 
-Jede Bonus-Aufgabe hat eine eigene Feature-Spec. Dort stehen Details, Entscheidungen und der Stand je Anforderung (P0/P1/P2). Hier steht nur der grobe Status: Offen, Spezifiziert oder Umgesetzt.
+Jede Bonus-Aufgabe hat eine eigene Feature-Spec. Dort stehen Details, Entscheidungen und der Stand je Anforderung (P0/P1/P2). Hier steht nur der grobe Status: Offen, Spezifiziert, Umgesetzt oder Verworfen.
 
 
 | ID  | Anforderung                                                                                                                             | Feature-Spec                         | Status |
 | --- | --------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------ | ------ |
-| B1  | Kopieren-Button: Die Umformulierung wird per Klick in die Zwischenablage kopiert, mit kurzer Bestätigung („Kopiert!“).                  | [B1](features/B1_kopieren-button.md) | Offen  |
-| B2  | Ton-Auswahl: Dropdown mit Corporate (Standard), zuckersüß und passiv-aggressiv. Der Ton wird als Feld `tone` an den Endpoint übergeben. | [B2](features/B2_ton-auswahl.md)     | Offen  |
+| B1  | Kopieren-Button: Die Umformulierung wird per Klick in die Zwischenablage kopiert, mit kurzer Bestätigung („Kopiert!“).                  | – | Verworfen |
+| B2  | Ton-Auswahl: Dropdown mit Corporate (Standard), zuckersüß und passiv-aggressiv. Der Ton wird als Feld `tone` an den Endpoint übergeben. | – | Verworfen |
 | B3  | Klartext-Modus: Umschalter 😊 Freundlich / 🔍 Klartext. Im Klartext-Modus wird ein LinkedIn-Post in trockenen Klartext zurückübersetzt.   | [B3](features/B3_klartext-modus.md)  | Umgesetzt |
 
 
@@ -184,10 +198,12 @@ Nach jedem Schritt wird das Ergebnis geprüft, bevor der nächste beginnt.
 
 ## 9. Offene Punkte
 
-Diese Punkte sind noch nicht festgelegt und werden bei der Umsetzung entschieden:
+Es ist nichts mehr offen. Bekannte Schwächen, die bewusst in Kauf genommen werden:
 
-- Gestaltung und Layout der Oberfläche. Sie soll einfach und übersichtlich sein.
-- Konkrete Hinweistexte im Fehlerfall.
-- Das Modell übernimmt bei englischer Eingabe gelegentlich deutsche Buzzwords aus dem Prompt (z. B. „proaktive“). Lässt sich über den Prompt lösen.
-- `compatibility_date` steht auf `2026-06-01`, weil Wrangler 4.95 kein neueres Datum kennt.
+- **Deutsche Buzzwords in englischen Antworten:** Im Freundlich-Modus übernimmt das Modell gelegentlich Wörter aus dem deutschen Prompt (z. B. „proaktiv“). Das passt zur Satire.
+- **Emoji-Ziel:** Statt der geforderten mindestens 3 Emojis liefert Mistral 1 bis 4. Eine Korrektur im Worker lohnt den Aufwand nicht.
+- **Spracherkennung:** Sie kennt nur Deutsch und Englisch. Andere Sprachen werden als Englisch behandelt.
+- **`compatibility_date`:** Es steht auf `2026-06-01`, weil Wrangler 4.95 kein neueres Datum kennt. Nach einem Wrangler-Update kann es angehoben werden.
+
+Verworfene Ideen: B1, B2, Pressemitteilungen der Regierung (zu heikel) und das automatische Abrufen von LinkedIn-Posts per API, Scraping oder Bookmarklet (zu viel Aufwand für zu wenig Nutzen).
 
