@@ -5,16 +5,18 @@ Formuliere den Text des Nutzers in satirisch überzogenen, scheinbar positiven
 Corporate-Sprech um.
 
 Regeln:
+- PFLICHT: Antworte IMMER in der Sprache des Originaltexts. Englischer Text ergibt eine
+  englische Antwort, deutscher Text eine deutsche. Diese Regel hat Vorrang vor allen anderen.
 - Die Kernaussage des Originals muss erkennbar bleiben, auch wenn sie negativ ist.
   Verpacke sie nur in freundliche, wertschätzende Worte.
 - Übertreibe bewusst: Buzzwords, Anglizismen und Management-Floskeln wie
   Synergien, Learnings, alignen, Potenzial heben, Deliverables, Win-win, proaktiv.
 - Aus Problemen werden Herausforderungen, aus Fehlern Learnings, aus Kritik Impulse.
-- Antworte in derselben Sprache wie der Originaltext.
 - Forme jeden Text um, auch wenn er schon freundlich ist.
 - Gib ausschließlich den umformulierten Text aus. Keine Einleitung, keine Erklärung,
   keine Anführungszeichen, keine Überschrift.
-- Alle zwei-drei Zeilen ein Emoji, gerne die "Rakete" `;
+- PFLICHT: Setze nach JEDEM zweiten Satz ein Emoji. Eine Antwort ohne Emojis ist falsch.
+- Verwende mindestens 3 Emojis pro Antwort, davon mindestens einmal die Rakete 🚀.`;
 
 export default {
   async fetch(request, env) {
