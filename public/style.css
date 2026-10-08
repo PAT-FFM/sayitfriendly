@@ -61,6 +61,21 @@ button {
   cursor: pointer;
 }
 
+.input-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+.input-head label { margin-bottom: 0; }
+
+button.small {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.85rem;
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
 button:disabled { opacity: 0.6; cursor: wait; }
 
 #status { color: var(--muted); }

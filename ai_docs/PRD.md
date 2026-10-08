@@ -133,6 +133,7 @@ Der Prompt steht als Konstante `FRIENDLY_PROMPT` in `src/index.js`. Mit Bonus B3
 | F5  | Während der Anfrage gibt es einen Ladezustand: Der Button ist deaktiviert und ein Hinweis wie „Wird schöngefärbt …“ ist sichtbar.                     | Muss      |
 | F6  | Ein leerer Text wird nicht abgeschickt.                                                                                                               | Muss      |
 | F7  | Bei einem Fehler (Netzwerk, LLM, 4xx/5xx) erscheint ein verständlicher Hinweis statt einer leeren Seite. Ein neuer Versuch ist ohne Neuladen möglich. | Muss      |
+| F8  | Ein kleiner Button „fill“ über dem Eingabefeld setzt per Zufall eines von drei Beispielen des aktuellen Modus ein (in `MODES` in `public/app.js`). Das erste Beispiel dient auch als Platzhalter. | Kann      |
 
 
 

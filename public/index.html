@@ -22,7 +22,10 @@
         <label><input type="radio" name="mode" value="immo"> 🏠 Immo-Klartext</label>
       </fieldset>
 
-      <label for="input">Dein Text</label>
+      <div class="input-head">
+        <label for="input">Dein Text</label>
+        <button id="fill" type="button" class="small" title="Zufälliges Beispiel einfügen">fill</button>
+      </div>
       <textarea id="input" rows="5" placeholder="z. B.: Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt."></textarea>
       <div class="actions">
         <button id="submit" type="submit">Freundlich machen</button>

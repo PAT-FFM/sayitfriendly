@@ -6,22 +6,35 @@ const result = document.getElementById("result");
 const original = document.getElementById("original");
 const friendly = document.getElementById("friendly");
 const resultHeading = document.getElementById("result-heading");
+const fill = document.getElementById("fill");
 
 const MODES = {
   friendly: {
-    placeholder: "z. B.: Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt.",
+    examples: [
+      "Das Meeting war komplett sinnlos und du hast mal wieder alles verbockt.",
+      "Deine Präsentation war so langweilig, dass ich fast eingeschlafen wäre. Nächstes Mal bitte mit Inhalt.",
+      "Your code is a mess and nobody understands what you were thinking.",
+    ],
     button: "Freundlich machen",
     loading: "Wird schöngefärbt …",
     heading: "Freundlich",
   },
   plain: {
-    placeholder: "z. B.: I'm thrilled and humbled to announce that after 7 amazing years I'm starting a new chapter. 🚀 #grateful",
+    examples: [
+      "I'm thrilled and humbled to announce that after 7 amazing years I'm starting a new chapter. 🚀 #grateful",
+      "Was mir mein Hund über Leadership beigebracht hat: Er wartet nicht auf Perfektion, er geht einfach los. 🐕 Agree? 👇 #Mindset #Leadership",
+      "Ich bin unglaublich dankbar, Teil dieser Reise sein zu dürfen. Neue Herausforderungen warten! 💪 #NewBeginnings #OpenToWork",
+    ],
     button: "Klartext bitte",
     loading: "Wird entschwurbelt …",
     heading: "Klartext",
   },
   immo: {
-    placeholder: "z. B.: Lichtdurchflutete Wohnung mit Charme in aufstrebender Lage, verkehrsgünstig gelegen. Ideal für Kreative mit Liebe zum Detail.",
+    examples: [
+      "Lichtdurchflutete Wohnung mit Charme in aufstrebender Lage, verkehrsgünstig gelegen. Ideal für Kreative mit Liebe zum Detail.",
+      "Gemütliches Hotelzimmer mit Blick auf das pulsierende Stadtleben, nur wenige Gehminuten zum Strand. Frühstück auf Anfrage.",
+      "Cozy studio full of potential in a vibrant up-and-coming neighbourhood. Perfect for minimalists who love the urban lifestyle.",
+    ],
     button: "Klartext bitte",
     loading: "Wird entmaklert …",
     heading: "Klartext",
@@ -34,7 +47,7 @@ function currentMode() {
 
 function applyMode() {
   const labels = MODES[currentMode()];
-  input.placeholder = labels.placeholder;
+  input.placeholder = `z. B.: ${labels.examples[0]}`;
   button.textContent = labels.button;
   resultHeading.textContent = labels.heading;
   result.hidden = true;
@@ -45,6 +58,13 @@ function setStatus(message, isError = false) {
   status.textContent = message;
   status.classList.toggle("error", isError);
 }
+
+// Zufälliges Beispiel des aktuellen Modus, möglichst nicht dasselbe wie gerade im Feld
+fill.addEventListener("click", () => {
+  const candidates = MODES[currentMode()].examples.filter((example) => example !== input.value);
+  input.value = candidates[Math.floor(Math.random() * candidates.length)];
+  input.focus();
+});
 
 form.addEventListener("change", (event) => {
   if (event.target.name === "mode") applyMode();
